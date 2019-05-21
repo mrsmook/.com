@@ -19,7 +19,7 @@ try {
 
 const {
   NODE_ENV,
-  URL: NETLIFY_SITE_URL = 'https://imselim.ml',
+  URL: NETLIFY_SITE_URL = 'https://imselim.netlify.com',
   DEPLOY_PRIME_URL: NETLIFY_DEPLOY_URL = NETLIFY_SITE_URL,
   CONTEXT: NETLIFY_ENV = NODE_ENV,
 } = process.env
