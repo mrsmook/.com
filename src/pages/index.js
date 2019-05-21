@@ -52,7 +52,7 @@ const ContentCover = styled.div`
 `
 
 const Index = ({ data }) => {
-  const home = data.contentfulHome
+  const home = data.contentfulHomes
   const galleries = data.allContentfulExtendedGallery.edges
   return (
     <>
@@ -108,7 +108,7 @@ export const query = graphql`
         }
       }
     }
-    contentfulHome {
+    contentfulHomes {
       title
       id
       heroImage {

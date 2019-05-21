@@ -10,7 +10,7 @@ import config from './../utils/siteConfig'
 import { Flex, Box, Heading } from 'rebass'
 
 const TagTemplate = ({ data }) => {
-  const { tagHero } = data.contentfulHome
+  const { tagHero } = data.contentfulHomes
   const { title, slug } = data.contentfulTag
 
   const posts = sortBy(data.contentfulTag.post, 'publishDate').reverse()
@@ -66,7 +66,7 @@ const TagTemplate = ({ data }) => {
 
 export const query = graphql`
   query($slug: String!) {
-    contentfulHome {
+    contentfulHomes {
       tagHero {
         title
         fluid(maxWidth: 1600, quality: 65) {
