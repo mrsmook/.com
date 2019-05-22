@@ -1,54 +1,52 @@
 import React from 'react'
 import { graphql } from 'gatsby'
 import find from 'lodash/find'
+import Helmet from 'react-helmet'
+import config from '../utils/siteConfig'
+import Layout from '../components/Layout'
+import Wrapper from '../components/Wrapper'
+import PostHead from '../components/Post/PostHead'
+import PostHero from '../components/Post/PostHero'
+import PostArticle from '../components/Post/PostArticle'
+import SEO from '../components/SEO'
 
-import ContentHead from './../components/general/contentHead'
-import PostHero from './../components/post/postHero'
-import PostArticle from './../components/post/postArticle'
-import SEO from './../components/general/SEO'
-
-const PostTemplate = ({ data }) => {
+const PostTemplate = ({ data, location }) => {
   const {
     title,
+    slug,
     id,
     heroImage,
     body,
     publishDate,
     tags,
-    slug,
   } = data.contentfulPost
-
-  const discussUrl = `https://mobile.twitter.com/search?q=${encodeURIComponent(
-    `https://imselim.netlify.com/blog/${slug}/`
-  )}`
+  const postNode = data.contentfulPost
 
   const postIndex = find(
     data.allContentfulPost.edges,
     ({ node: post }) => post.id === id
   )
   return (
-    <>
-      <SEO
-        title={title}
-        image={heroImage}
-        description={body.childMarkdownRemark.metaExcerpt}
-      />
-      <ContentHead
-        displayExcerpt={false}
+    <Layout location={location}>
+      <Helmet>
+        <title>{`${config.siteTitle} - ${title}`}</title>
+      </Helmet>
+      <SEO pagePath={slug} postNode={postNode} postSEO />
+      <PostHead
         title={title}
         date={publishDate}
         tags={tags}
         time={body.childMarkdownRemark.timeToRead}
       />
-      <PostHero image={heroImage} />
-
-      <PostArticle
-        body={body}
-        previous={postIndex.previous}
-        next={postIndex.next}
-        discussUrl={discussUrl}
-      />
-    </>
+      <Wrapper>
+        <PostHero image={heroImage} />
+        <PostArticle
+          body={body}
+          previous={postIndex.previous}
+          next={postIndex.next}
+        />
+      </Wrapper>
+    </Layout>
   )
 }
 
@@ -63,7 +61,7 @@ export const query = graphql`
           content
         }
       }
-      publishDate(formatString: "DD MMM YYYY")
+      publishDate(formatString: "D MMMM YYYY")
       publishDateISO: publishDate(formatString: "YYYY-MM-DD")
       tags {
         title
@@ -72,19 +70,19 @@ export const query = graphql`
       }
       heroImage {
         title
-        fluid(maxWidth: 1600, quality: 65) {
+        fluid(maxWidth: 1000) {
           ...GatsbyContentfulFluid_withWebp
         }
-        ogimg: fluid(maxWidth: 900, quality: 65) {
-          ...GatsbyContentfulFluid_withWebp
+        ogimg: resize(width: 900) {
           src
+          width
+          height
         }
       }
       body {
         childMarkdownRemark {
           html
           excerpt(pruneLength: 320)
-          metaExcerpt: excerpt(pruneLength: 120)
           timeToRead
         }
       }

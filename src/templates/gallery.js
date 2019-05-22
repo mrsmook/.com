@@ -1,36 +1,38 @@
 import React from 'react'
 import { graphql } from 'gatsby'
+import Helmet from 'react-helmet'
+import config from '../utils/siteConfig'
+import Layout from '../components/Layout'
+import Wrapper from '../components/Wrapper'
+import GalleryHead from '../components/Gallery/GalleryHead'
+import GalleryComposition from '../components/Gallery/GalleryComposition'
+import SEO from '../components/SEO'
 
-import GalleryGrid from './../components/gallery/galleryGrid'
-import ContentHead from './../components/general/contentHead'
-import SEO from './../components/general/SEO'
-
-const GalleryTemplate = ({ data }) => {
+const GalleryTemplate = ({ data, location }) => {
   const gallery = data.contentfulExtendedGallery
+  const galleryNode = data.contentfulExtendedGallery
   const subGalleries = data.contentfulExtendedGallery.galleries
   return (
-    <>
-      <SEO title={gallery.title} image={gallery.shareImage} />
-      <ContentHead
-        displayExcerpt
-        title={gallery.title}
-        body={gallery.body}
-        tags={gallery.tags}
-      />
-      {subGalleries.map((subGallery, index) => (
-        <div key={index}>
-          {subGallery.__typename === 'ContentfulSubGallery' && (
-            <GalleryGrid
-              key={subGallery.id}
-              slug={subGallery.slug}
-              images={subGallery.images}
-              title={subGallery.title}
-              itemsPerRow={[2, 3, 5]}
-            />
-          )}
-        </div>
-      ))}
-    </>
+    <Layout location={location}>
+      <Helmet>
+        <title>{`${config.siteTitle} - ${gallery.title} `}</title>
+      </Helmet>
+      <SEO pagePath={gallery.slug} postNode={galleryNode} gallerySEO />
+      <GalleryHead title={gallery.title} desc={gallery.body} tags={gallery.tags} />
+      <Wrapper>
+        {subGalleries.map((subGallery, index) => (
+          <div key={index}>
+            {subGallery.__typename === 'ContentfulSubGallery' && (
+              <GalleryComposition
+                key={subGallery.id}
+                title={subGallery.title}
+                images={subGallery.images}
+              />
+            )}
+          </div>
+        ))}
+      </Wrapper>
+    </Layout>
   )
 }
 
@@ -52,8 +54,12 @@ export const query = graphql`
         id
         slug
       }
-      shareImage {
-        ogimg: resize(width: 1200) {
+      heroImage {
+        title
+        fluid(maxWidth: 1000) {
+          ...GatsbyContentfulFluid_withWebp
+        }
+        ogimg: resize(width: 900) {
           src
           width
           height
@@ -68,20 +74,12 @@ export const query = graphql`
         __typename
         ... on ContentfulSubGallery {
           id
-          slug
           title
           images {
-            id
             title
-            fluid(maxWidth: 1600, quality: 75) {
+            fluid(maxWidth: 1800, quality: 90) {
               ...GatsbyContentfulFluid_withWebp
               src
-              aspectRatio
-            }
-            thumbnail: fluid(maxWidth: 300, quality: 25) {
-              ...GatsbyContentfulFluid_withWebp
-              src
-              aspectRatio
             }
           }
         }

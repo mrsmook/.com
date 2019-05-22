@@ -6,8 +6,8 @@ try {
 } catch (e) {
   contentfulConfig = {
     production: {
-      spaceId: '2khkdurq88o0',
-      accessToken: 'Joj3ZZmlffBB75fCPPyPltGgsGEcf2TVgbWZiorlvNU',
+      spaceId: process.env.SPACE_ID,
+      accessToken: process.env.ACCESS_TOKEN,
     },
   }
 } finally {
@@ -17,64 +17,39 @@ try {
   }
 }
 
-const {
-  NODE_ENV,
-  URL: NETLIFY_SITE_URL = 'https://imselim.netlify.com',
-  DEPLOY_PRIME_URL: NETLIFY_DEPLOY_URL = NETLIFY_SITE_URL,
-  CONTEXT: NETLIFY_ENV = NODE_ENV,
-} = process.env
-const isNetlifyProduction = NETLIFY_ENV === 'production'
-const siteUrl = isNetlifyProduction ? NETLIFY_SITE_URL : NETLIFY_DEPLOY_URL
-
 module.exports = {
   siteMetadata: {
     siteUrl: config.siteUrl,
+    rssMetadata: {
+      site_url: config.siteUrl,
+      feed_url: `${config.siteUrl}/rss.xml`,
+      title: config.siteTitle,
+      description: config.siteDescription,
+      image_url: `${config.siteUrl}${config.siteLogo}`,
+      author: config.author,
+      copyright: config.copyright,
+    },
   },
   plugins: [
     {
-      resolve: 'gatsby-plugin-env-variables',
+     resolve: 'gatsby-plugin-fathom',
+     options: {
+       // your Fathom server URL
+       trackingUrl: 'jpvalery.usesfathom.com',
+       // unique site id (optional, required for Fathom v1.1.0+)
+       siteId: 'YXKOHEVS'
+     },
+   },
+    {
+      resolve: 'gatsby-plugin-canonical-urls',
       options: {
-        // Variables in the whitelist will be available to builds as process.env.<NAME>, just
-        // like Node processes
-        whitelist: ['ENABLE_NETLIFY_AUTH'],
+        siteUrl: config.siteUrl,
       },
     },
-    `gatsby-plugin-flow`,
-    'gatsby-plugin-react-helmet',
-    'gatsby-plugin-styled-components',
-    `gatsby-plugin-sharp`,
     {
-      resolve: `gatsby-transformer-remark`,
+      resolve: `gatsby-plugin-emotion`,
       options: {
-        plugins: [
-          {
-            resolve: `gatsby-remark-images-contentful`,
-            options: {
-              maxWidth: 960,
-              linkImagesToOriginal: false,
-            },
-          },
-          {
-            resolve: `gatsby-remark-images-grid`,
-          },
-
-          {
-            resolve: `gatsby-remark-prismjs`,
-            options: {
-              classPrefix: 'language-',
-              showLineNumbers: true,
-            },
-          },
-          {
-            resolve: `@raae/gatsby-remark-oembed`,
-            options: {
-              providers: {
-                exclude: ['Reddit', 'Flickr', 'Instagram', 'Twitter'],
-              },
-            },
-          },
-          `gatsby-remark-responsive-iframe`,
-        ],
+        // Accepts all options defined by `babel-plugin-emotion` plugin.
       },
     },
     {
@@ -83,6 +58,37 @@ module.exports = {
         pathToConfigModule: `src/utils/typography`,
       },
     },
+    'gatsby-plugin-react-helmet',
+    {
+      resolve: `gatsby-transformer-remark`,
+      options: {
+        plugins: [
+          {
+            resolve: `gatsby-remark-prismjs`,
+            options: {
+              classPrefix: 'language-',
+              showLineNumbers: true,
+            },
+          },
+          {
+            resolve: `gatsby-remark-images-contentful`,
+            options: {
+              maxWidth: 650,
+              backgroundColor: 'white',
+              linkImagesToOriginal: false,
+            },
+          },
+        ],
+      },
+    },
+    {
+      resolve: 'gatsby-source-contentful',
+      options:
+        process.env.NODE_ENV === 'development'
+          ? contentfulConfig.development
+          : contentfulConfig.production,
+    },
+    'gatsby-plugin-catch-links',
     {
       resolve: 'gatsby-plugin-manifest',
       options: {
@@ -96,39 +102,72 @@ module.exports = {
         icon: `static${config.siteLogo}`,
       },
     },
-    'gatsby-plugin-offline',
     {
-      resolve: 'gatsby-plugin-canonical-urls',
+      resolve: 'gatsby-plugin-feed',
       options: {
-        siteUrl: config.siteUrl,
-      },
-    },
-    {
-      resolve: 'gatsby-plugin-google-analytics',
-      options: {
-        trackingId: process.env.GOOGLE_ANALYTICS,
-        head: true,
-      },
-    },
-    {
-      resolve: `gatsby-plugin-amplitude-analytics`,
-      options: {
-        // Specify the API key for your Amplitude Project (required)
-        apiKey: process.env.AMPLITUDE,
-        // Puts tracking script in the head instead of the body (optional)
-        head: false,
-        // Prevents loading Amplitude and logging events if visitors have "Do Not Track" enabled (optional)
-        respectDNT: true,
-        eventTypes: {
-          outboundLinkClick: 'OUTBOUND_LINK_CLICK',
-          pageView: 'PAGE_VIEW',
+        setup(ref) {
+          const ret = ref.query.site.siteMetadata.rssMetadata
+          ret.allMarkdownRemark = ref.query.allMarkdownRemark
+          ret.generator = 'Jp Valery'
+          return ret
         },
-        // Amplitude JS SDK configuration options (optional)
-        amplitudeConfig: {
-          saveEvents: true,
-          includeUtm: true,
-          includeReferrer: true,
-        },
+        query: `
+    {
+      site {
+        siteMetadata {
+          rssMetadata {
+            site_url
+            feed_url
+            title
+            description
+            image_url
+            author
+            copyright
+          }
+        }
+      }
+    }
+  `,
+        feeds: [
+          {
+            serialize(ctx) {
+              const rssMetadata = ctx.query.site.siteMetadata.rssMetadata
+              return ctx.query.allContentfulPost.edges.map(edge => ({
+                date: edge.node.publishDate,
+                title: edge.node.title,
+                description: edge.node.body.childMarkdownRemark.excerpt,
+
+                url: rssMetadata.site_url + '/' + edge.node.slug,
+                guid: rssMetadata.site_url + '/' + edge.node.slug,
+                custom_elements: [
+                  {
+                    'content:encoded': edge.node.body.childMarkdownRemark.html,
+                  },
+                ],
+              }))
+            },
+            query: `
+              {
+            allContentfulPost(limit: 1000, sort: {fields: [publishDate], order: DESC}) {
+               edges {
+                 node {
+                   title
+                   slug
+                   publishDate(formatString: "MMMM DD, YYYY")
+                   body {
+                     childMarkdownRemark {
+                       html
+                       excerpt(pruneLength: 80)
+                     }
+                   }
+                 }
+               }
+             }
+           }
+      `,
+            output: '/rss.xml',
+          },
+        ],
       },
     },
     {
@@ -137,38 +176,15 @@ module.exports = {
         color: config.themeColor,
       },
     },
-    {
-      resolve: 'gatsby-source-contentful',
-      options:
-        process.env.NODE_ENV === 'development'
-          ? contentfulConfig.development
-          : contentfulConfig.production,
-    },
-
+    'gatsby-plugin-netlify',
+    'gatsby-plugin-advanced-sitemap',
     {
       resolve: 'gatsby-plugin-robots-txt',
       options: {
-        resolveEnv: () => NETLIFY_ENV,
-        env: {
-          production: {
-            policy: [{ userAgent: '*' }],
-          },
-          'branch-deploy': {
-            policy: [{ userAgent: '*', disallow: ['/'] }],
-            sitemap: null,
-            host: null,
-          },
-          'deploy-preview': {
-            policy: [{ userAgent: '*', disallow: ['/'] }],
-            sitemap: null,
-            host: null,
-          },
-        },
+        host: config.siteUrl,
+        sitemap:`${config.siteUrl}/sitemap.xml`,
+        policy: [{ userAgent: '*' }],
       },
     },
-
-    'gatsby-plugin-catch-links',
-    'gatsby-plugin-sitemap',
-    'gatsby-plugin-netlify',
   ],
 }

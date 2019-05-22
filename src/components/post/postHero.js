@@ -1,23 +1,35 @@
 import React from 'react'
-import styled from 'styled-components'
+import styled from '@emotion/styled'
 import Img from 'gatsby-image'
 
-const Hero = styled.div`
+const Wrapper = styled.div`
   width: 100%;
-  height: 100%;
-  pointer-events: none;
-  transition: opacity 0.3s, visibility 0.3s;
-  div {
-    height: 100% !important;
-    object-fit: cover !important;
+  padding: 0;
+`
+
+const Hero = styled.div`
+  position: relative;
+  width: calc(100%);
+  margin: 0 auto;
+  @media screen and (min-width: ${props => props.theme.responsive.medium}) {
+    grid-area: left;
+    pointer-events: none;
+    transition: opacity 0.3s, visibility 0.3s;
+    height: 55vh;
+    div {
+      height: 100% !important;
+      object-fit: cover !important;
+    }
   }
 `
 
 const ArticleHero = props => {
   return (
-    <Hero>
-      <Img fluid={props.image.fluid} />
-    </Hero>
+    <Wrapper>
+      <Hero>
+        <Img fluid={props.image.fluid} />
+      </Hero>
+    </Wrapper>
   )
 }
 

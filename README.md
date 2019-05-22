@@ -1,29 +1,28 @@
-[![Netlify Status](https://api.netlify.com/api/v1/badges/33c746c0-e9c5-4853-ae92-f721211dd417/deploy-status)](https://app.netlify.com/sites/iamnet/deploys) [![Maintainability](https://api.codeclimate.com/v1/badges/cfe289e436dbeed2598a/maintainability)](https://codeclimate.com/github/iammatthias/.com/maintainability) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/9403cc5b92e74a1f9f3608221b1d76c1)](https://www.codacy.com/app/iammatthias/.com?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=iammatthias/.com&amp;utm_campaign=Badge_Grade)
+# Photo Portfolio - Gatsby + Contentful + Netlify
 
-# [IAMMATTHIAS v3](https://iammatthias.com)
+[See it in action](https://jpvalery.photo)
 
-![](https://user-images.githubusercontent.com/5431737/52232080-7243b980-2870-11e9-8432-a41881f8e5d0.png) 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/592d351c-5180-41c9-be77-e98fbc33cd2e/deploy-status)](https://app.netlify.com/sites/jpvalery-portfolio/deploys) [![Maintainability](https://api.codeclimate.com/v1/badges/8c4c1cfe4b182212ae3c/maintainability)](https://codeclimate.com/github/jpvalery/portfolio/maintainability) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/e4864e257d8d4c40a2a3535b619f9fe9)](https://www.codacy.com/app/jpvalery/portfolio?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=jpvalery/portfolio&amp;utm_campaign=Badge_Grade)
+
 
 ## Overview
-Codebase for [https://iammatthias.com](https://iammatthias.com)
 
-Portfolio site built using Gatsby + Contentful + Netlify. Features photography galleries + subgalleries, a blog, and Netlify forms. Features React-Images v1, performant masonry grid, sub galleries, and a blog. 
+Codebase for [https://jpvalery.photo](https://jpvalery.photo) my photography portfolio.
+Current iteration is built using Contentful, Netlify, and Gatsby V2; and was launched in January 2019. Based on [@iammatthias/.com](https://github.com/iammatthias/.com)
 
-### Tooling
-- Netlify
-- Gatsby JS
-- Contentful
+This site makes heavy use of the [`gatsby-image`](https://next.gatsbyjs.org/packages/gatsby-image/) plugin, pulling optimized fluid assets from Contentful.
+
+### Features
+
+- Netlify integration
+- Contentful integration
+- Analytics with [Fathom](https://usefathom.com)
+- SEO
 - Styled components
-- Rebass
-- Page Transitions
-- Performant masonry using Rebass
-- Google Analytics
-- Progressive Web app with custom app icon
-- Offline support
-- Dark mode
+- RSS Feed
 
-### Notes
+##### Notes
 
-> This code can be used as a reference for other Gatsby projects, but will not work out-of-the-box without replicating the data structure in Contentful. A brief overview is available here: [#18](https://github.com/iammatthias/.com/issues/18)
+> Code can be used as a reference for other Gatsby projects, but this repo will not work out-of-the-box without replicating the Contentful data structure. If you would like to quickly bootstrap a Gatsby + Contentful + Netlify project, I recommend checking out the fantastic [GCN](https://github.com/ryanwiemer/gatsby-starter-gcn) starter.
 
-#### If you would like to quickly bootstrap a Gatsby + Contentful + Netlify project, I recommend the fantastic [GCN](https://github.com/ryanwiemer/gatsby-starter-gcn) starter.
+> This repo uses Yarn, over NPM.

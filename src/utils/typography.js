@@ -1,28 +1,56 @@
-// @flow
 import Typography from 'typography'
 
 const typography = new Typography({
-  title: 'Montserrat + Lato + Source Code',
-  baseFontSize: '18px',
-  baseLineHeight: 1.4,
-  googleFonts: [
-    {
-      name: 'Playfair Display',
-      styles: ['900', '900i'],
+  title: 'nogfont',
+  baseFontSize: '16px',
+  baseLineHeight: 1.618,
+  scaleRatio: 5 / 2,
+
+  headerFontFamily: ['FreightSansBold'],
+  bodyFontFamily: ['FreightSansBook'],
+
+  headerWeight: 900,
+  bodyWeight: 400,
+  boldWeight: 900,
+  overrideStyles: ({ adjustFontSizeTo, scale, rhythm }, options) => ({
+    blockquote: {
+      ...scale(1 / 5),
+      fontStyle: 'italic',
+      paddingLeft: rhythm(13 / 16),
+      marginLeft: rhythm(-1),
     },
-    {
-      name: 'Montserrat',
-      styles: ['900', '900i'],
+    'blockquote > :last-child': {
+      marginBottom: 0,
     },
-    {
-      name: 'Lato',
-      styles: ['400', '900'],
+    'blockquote cite': {
+      ...adjustFontSizeTo(options.baseFontSize),
+      color: options.bodyColor,
+      fontWeight: options.bodyWeight,
     },
-    {
-      name: 'Source Code Pro',
-      styles: ['400&display=swap'],
+    'blockquote cite:before': {
+      content: '"— "',
     },
-  ],
+    'pre[class*="language-"],code[class*="language-"]': {
+      fontFamily: ['IBM Plex Mono', 'monospace'].join(','),
+    },
+    ul: {
+      listStyle: 'disc',
+    },
+    'ul,ol': {
+      marginLeft: 0,
+    },
+    a: {
+      textDecoration: 'none',
+    },
+    'a:hover,a:active': {
+      boxShadow: 'none',
+    },
+    'mark,ins': {
+      color: 'white',
+      padding: `${rhythm(1 / 16)} ${rhythm(1 / 8)}`,
+      textDecoration: 'none',
+    },
+  }),
 })
 
 const { rhythm, scale } = typography
